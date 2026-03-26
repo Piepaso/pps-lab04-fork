@@ -6,6 +6,7 @@ object Sets:
   
   trait SetADT:
     type Set[A]
+    def formElement[A](a: A): Set[A]
     def fromSequence[A](s: Sequence[A]): Set[A]
     def union[A](s1: Set[A], s2: Set[A]): Set[A]
     def intersection[A](s1: Set[A], s2: Set[A]): Set[A]
@@ -13,11 +14,14 @@ object Sets:
       def contains(a: A): Boolean
       def remove(a: A): Set[A]
       def toSequence(): Sequence[A]
+      def add(a: A): Set[A]
     
 
   object BasicSetADT extends SetADT:
 
     opaque type Set[A] = Sequence[A]
+    
+    def fromElement[A](a: A): Set[A] = Cons(a, Nil())
 
     def fromSequence[A](s: Sequence[A]): Set[A] = s match
       case Cons(h, t) => Cons(h, fromSequence(t.remove(h)))
@@ -39,6 +43,7 @@ object Sets:
         case Cons(_, t) => t.contains(a)
         case Nil() => false
       def toSequence(): Sequence[A] = s
+      def add(a: A): Set[A] = union(s, fromElement(a))
 
 @main def trySetADTModule =
   import Sets.* 

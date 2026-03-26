@@ -1,6 +1,8 @@
 package it.unibo.pps.tasks.adts
 
-import it.unibo.pps.u03.extensionmethods.Sequences.Sequence, Sequence.*
+import it.unibo.pps.u03.extensionmethods.Sequences.Sequence
+import Sequence.*
+import it.unibo.pps.u04.moduletypes.Sets.BasicSetADT
 
 /*  Exercise 2: 
  *  Implement the below trait, and write a meaningful test.
@@ -112,18 +114,25 @@ object SchoolModel:
        */
       def hasCourse(name: String): Boolean
   object BasicSchoolModule extends SchoolModule:
-    override type School = Nothing
-    override type Teacher = Nothing
-    override type Course = Nothing
 
-    def teacher(name: String): Teacher = ???
-    def course(name: String): Course = ???
-    def emptySchool: School = ???
+    case class S(courses: BasicSetADT.Set[Course], teachers: BasicSetADT.Set[Teacher], teacherToCourses: Sequence[(Int, Int)])
+
+    override type School = S
+    override type Teacher = String
+    override type Course = String
+
+    def teacher(name: String): Teacher = name
+    def course(name: String): Course = name
+    def emptySchool: School = S(BasicSetADT.fromSequence(Nil()), BasicSetADT.fromSequence(Nil()), Nil())
 
     extension (school: School)
-      def courses: Sequence[String] = ???
-      def teachers: Sequence[String] = ???
-      def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
+      def courses: Sequence[String] = school.courses.toSequence()
+      def teachers: Sequence[String] = school.teachers.toSequence()
+      def setTeacherToCourse(teacher: Teacher, course: Course): School = S(
+        school.teachers.add(teacher),
+        school.courses.add(course),
+        Cons((0, 0), Nil())
+      )
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
       def hasTeacher(name: String): Boolean = ???
       def hasCourse(name: String): Boolean = ???
