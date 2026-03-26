@@ -72,6 +72,9 @@ object SchoolModel:
        * @return the list of teachers
        */
       def teachers: Sequence[String]
+
+      def teachersToCourses: Sequence[(Int, Int)]
+
       /**
        * This method should return a new school with the teacher assigned to the course
        * e.g.,
@@ -126,16 +129,26 @@ object SchoolModel:
     def emptySchool: School = S(BasicSetADT.fromSequence(Nil()), BasicSetADT.fromSequence(Nil()), Nil())
 
     extension (school: School)
+
       def courses: Sequence[String] = school.courses.toSequence()
+
       def teachers: Sequence[String] = school.teachers.toSequence()
-      def setTeacherToCourse(teacher: Teacher, course: Course): School = S(
-        school.teachers.add(teacher),
-        school.courses.add(course),
-        Cons((0, 0), Nil())
-      )
-      def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
-      def hasTeacher(name: String): Boolean = ???
-      def hasCourse(name: String): Boolean = ???
+
+      def teachersToCourses: Sequence[(Int, Int)] = school.teacherToCourses
+
+      def setTeacherToCourse(teacher: Teacher, course: Course): School = {
+        val newCourses = school.courses.add(course)
+        val newTeachers = school.teachers.add(teacher)
+        S(newCourses, newTeachers, Cons((newCourses.indexOf(teacher), newTeachers.indexOf(course)), school.teacherToCourses))
+      }
+
+      def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
+        school.teacherToCourses.filter((t, _) => t == school.teachers.indexOf(teacher)).map((_, c) => school.courses.get(c).orElse("Err"))
+
+      def hasTeacher(name: String): Boolean = school.teachers.contains(name)
+
+      def hasCourse(name: String): Boolean = school.courses.contains(name)
+
 @main def examples(): Unit =
   import SchoolModel.BasicSchoolModule.*
   val school = emptySchool
@@ -159,5 +172,6 @@ object SchoolModel:
   println(school3.hasCourse("Math")) // true
   println(school3.hasCourse("Italian")) // true
   println(school3.coursesOfATeacher(john)) // Cons("Math", Cons("Italian", Nil()))
+  println(school3.teachersToCourses)
 
 

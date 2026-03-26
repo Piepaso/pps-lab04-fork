@@ -1,12 +1,17 @@
 package it.unibo.pps.u04.moduletypes
 
-import it.unibo.pps.u03.extensionmethods.Sequences.Sequence, Sequence.*
+import it.unibo.pps.u03.extensionmethods.Sequences.Sequence
+import it.unibo.pps.u03.extensionmethods.Optionals.Optional
+import Sequence.*
+import Optional.*
+
+import scala.annotation.tailrec
 
 object Sets:
   
   trait SetADT:
     type Set[A]
-    def formElement[A](a: A): Set[A]
+    def fromElement[A](a: A): Set[A]
     def fromSequence[A](s: Sequence[A]): Set[A]
     def union[A](s1: Set[A], s2: Set[A]): Set[A]
     def intersection[A](s1: Set[A], s2: Set[A]): Set[A]
@@ -15,6 +20,8 @@ object Sets:
       def remove(a: A): Set[A]
       def toSequence(): Sequence[A]
       def add(a: A): Set[A]
+      def indexOf(a: A): Int
+      def get(i: Int): Optional[A]
     
 
   object BasicSetADT extends SetADT:
@@ -44,6 +51,20 @@ object Sets:
         case Nil() => false
       def toSequence(): Sequence[A] = s
       def add(a: A): Set[A] = union(s, fromElement(a))
+      def indexOf(a: A): Int =
+        @tailrec
+        def f(seq: Sequence[A], i: Int): Int = (seq, i) match
+          case (Cons(h, _), _) if h == a => i
+          case (Cons(_, t), _) => f(t, i + 1)
+          case _ => -1
+
+        f(s, 0)
+
+      @tailrec
+      def get(i: Int): Optional[A] = (s,i) match
+        case (Cons(h, t), i) if i == 0 => Just(h)
+        case (Cons(h, t), i) => t.get(i-1)
+        case _ => None()
 
 @main def trySetADTModule =
   import Sets.* 
@@ -57,3 +78,5 @@ object Sets:
   println(s2.toSequence()) // (10, 11)
   println(union(s1, s2).toSequence()) // (10, 20, 30, 11)
   println(intersection(s1, s2).toSequence()) // (10)
+  println(s1.indexOf(20))
+  println(s1.get(1))
