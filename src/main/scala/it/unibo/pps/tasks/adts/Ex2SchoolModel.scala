@@ -136,11 +136,10 @@ object SchoolModel:
 
       def teachersToCourses: Sequence[(Int, Int)] = school.teacherToCourses
 
-      def setTeacherToCourse(teacher: Teacher, course: Course): School = {
+      def setTeacherToCourse(teacher: Teacher, course: Course): School =
         val newCourses = school.courses.add(course)
         val newTeachers = school.teachers.add(teacher)
         S(newCourses, newTeachers, Cons((newCourses.indexOf(teacher), newTeachers.indexOf(course)), school.teacherToCourses))
-      }
 
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
         school.teacherToCourses.filter((t, _) => t == school.teachers.indexOf(teacher)).map((_, c) => school.courses.get(c).orElse("Err"))

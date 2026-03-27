@@ -9,7 +9,7 @@ import it.unibo.pps.u03.Optionals.Optional
 /* Tests should be clear, but note they are expressed independently of the 
    specific implementation -- UNCOMMENT FOR THE EXERCISE! 
 */
-/**
+
 class Stacktest:
 
 
@@ -36,5 +36,3 @@ class Stacktest:
     val stack = empty[Int].push(10).push(20)
     val popResult = stack.pop()
     assertEquals(Optional.Just((20, empty[Int].push(10))), popResult)
-
-**/
